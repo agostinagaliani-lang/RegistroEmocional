@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro de Chequeo — Agostina Galiani v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Work+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --lavanda:       #C3B8DC;
+    --lavanda-light: #EAE5F5;
+    --lavanda-mid:   #9E8FC4;
+    --lavanda-deep:  #6E5F9A;
+    --crema:         #F7F3EC;
+    --crema-dark:    #EDE5D8;
+    --musgo:         #7A8C6E;
+    --musgo-light:   #B5C4A6;
+    --musgo-dark:    #4E5E44;
+    --text-dark:     #2E2A3B;
+    --text-mid:      #5C5670;
+    --text-light:    #8E89A0;
+    --white:         #FFFFFF;
+    --card-radius:   18px;
+    --transition:    0.28s cubic-bezier(.4,0,.2,1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Work Sans', sans-serif;
+    background: var(--crema);
+    color: var(--text-dark);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Decorative background blobs */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -120px; left: -100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(195,184,220,0.35) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -80px; right: -80px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(122,140,110,0.2) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ─── HEADER ─────────────────────────────────── */
+  header {
+    position: relative; z-index: 10;
+    padding: 28px 24px 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--crema-dark);
+    background: rgba(247,243,236,0.85);
+    backdrop-filter: blur(8px);
+  }
+  .header-tag {
+    display: inline-block;
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--musgo);
+    background: var(--musgo-light);
+    border-radius: 20px;
+    padding: 4px 14px;
+    margin-bottom: 10px;
+    opacity: 0.85;
+  }
+  .header-name {
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(22px, 5vw, 30px);
+    font-weight: 600;
+    color: var(--lavanda-deep);
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+  }
+  .header-subtitle {
+    font-size: 13px;
+    color: var(--text-light);
+    font-style: italic;
+    margin-top: 4px;
+  }
+
+  /* ─── SCREEN WRAPPER ─────────────────────────── */
+  .screen {
+    display: none;
+    position: relative; z-index: 5;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+    animation: fadeUp 0.4s ease both;
+  }
+  .screen.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── SECTION TITLE ──────────────────────────── */
+  .section-eyebrow {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--lavanda-mid);
+    margin-bottom: 6px;
+  }
+  .section-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(20px, 5vw, 26px);
+    font-weight: 600;
+    color: var(--text-dark);
+    line-height: 1.25;
+    margin-bottom: 6px;
+  }
+  .section-subtitle {
+    font-size: 14px;
+    color: var(--text-mid);
+    font-style: italic;
+    margin-bottom: 28px;
+  }
+
+  /* ─── CARDS GRID ─────────────────────────────── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .card {
+    background: var(--white);
+    border: 2px solid var(--crema-dark);
+    border-radius: var(--card-radius);
+    padding: 16px 12px 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    transition-property: border-color, background, transform, box-shadow;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(195,184,220,0.12), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-radius: inherit;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(110,95,154,0.13);
+    border-color: var(--lavanda);
+  }
+  .card:hover::after { opacity: 1; }
+
+  .card.selected {
+    border-color: var(--lavanda-mid);
+    background: var(--lavanda-light);
+    box-shadow: 0 4px 18px rgba(158,143,196,0.25);
+  }
+  .card.selected::after { opacity: 1; }
+
+  .card-emoji {
+    font-size: 30px;
+    line-height: 1;
+    margin-bottom: 8px;
+    display: block;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.07));
+  }
+  .card-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+  .card-desc {
+    font-size: 11.5px;
+    color: var(--text-light);
+    line-height: 1.4;
+  }
+  .card.selected .card-label { color: var(--lavanda-deep); }
+  .card.selected .card-desc  { color: var(--text-mid); }
+
+  /* Check badge */
+  .card .check {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--lavanda-mid);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: var(--transition);
+  }
+  .card.selected .check {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .card .check svg { width: 11px; height: 11px; fill: white; }
+
+  /* ─── CATEGORY LABEL ─────────────────────────── */
+  .category-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--musgo);
+    margin: 24px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .category-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--crema-dark);
+  }
+
+  /* ─── INTENSITY SLIDER ───────────────────────── */
+  .intensity-wrap {
+    background: var(--white);
+    border: 1px solid var(--crema-dark);
+    border-radius: var(--card-radius);
+    padding: 20px;
+    margin-bottom: 28px;
+  }
+  .intensity-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 14px;
+  }
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 8px;
+  }
+  input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 10px;
+    background: linear-gradient(to right, var(--lavanda-mid) 0%, var(--lavanda-mid) var(--val, 50%), var(--crema-dark) var(--val, 50%));
+    outline: none;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--lavanda-deep);
+    box-shadow: 0 2px 8px rgba(110,95,154,0.3);
+    cursor: pointer;
+    border: 3px solid white;
+    transition: var(--transition);
+  }
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+  }
+  .slider-value {
+    font-family: 'Poppins', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--lavanda-deep);
+    min-width: 36px;
+    text-align: center;
+  }
+
+  /* ─── TEXTAREA ───────────────────────────────── */
+  .note-wrap {
+    background: var(--white);
+    border: 1px solid var(--crema-dark);
+    border-radius: var(--card-radius);
+    padding: 18px;
+    margin-bottom: 28px;
+  }
+  .note-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+  }
+  textarea {
+    width: 100%;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text-dark);
+    background: var(--crema);
+    border: 1px solid var(--crema-dark);
+    border-radius: 12px;
+    padding: 12px 14px;
+    resize: vertical;
+    min-height: 90px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  textarea:focus { border-color: var(--lavanda-mid); }
+  textarea::placeholder { color: var(--text-light); }
+
+  /* ─── BUTTONS ────────────────────────────────── */
+  .btn-primary {
+    display: block;
+    width: 100%;
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, var(--lavanda-deep), var(--lavanda-mid));
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: var(--transition);
+    box-shadow: 0 4px 16px rgba(110,95,154,0.25);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(110,95,154,0.35);
+  }
+  .btn-secondary {
+    display: block;
+    width: 100%;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--lavanda-deep);
+    background: var(--lavanda-light);
+    border: 1.5px solid var(--lavanda);
+    border-radius: 14px;
+    padding: 14px;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 10px;
+  }
+  .btn-secondary:hover {
+    background: var(--lavanda);
+    color: var(--lavanda-deep);
+  }
+  .btn-ghost {
+    background: none;
+    border: none;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text-light);
+    cursor: pointer;
+    display: block;
+    margin: 14px auto 0;
+    padding: 6px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .btn-ghost:hover { color: var(--text-mid); }
+
+  /* ─── WELCOME SCREEN ─────────────────────────── */
+  .welcome-card {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 36px 28px 32px;
+    text-align: center;
+    box-shadow: 0 4px 32px rgba(110,95,154,0.1);
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .welcome-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--lavanda-mid), var(--musgo-light), var(--lavanda));
+  }
+  .welcome-emoji { font-size: 52px; margin-bottom: 18px; display: block; }
+  .welcome-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+  .welcome-text {
+    font-size: 15px;
+    color: var(--text-mid);
+    line-height: 1.65;
+    margin-bottom: 28px;
+    font-style: italic;
+  }
+  .time-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--crema);
+    border: 1px solid var(--crema-dark);
+    border-radius: 20px;
+    padding: 7px 16px;
+    font-size: 12px;
+    color: var(--text-mid);
+    margin-bottom: 28px;
+  }
+
+  /* ─── PROGRESS BAR ───────────────────────────── */
+  .progress-wrap {
+    margin-bottom: 28px;
+  }
+  .progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .progress-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-light);
+  }
+  .progress-count {
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--lavanda-mid);
+  }
+  .progress-bar-bg {
+    height: 5px;
+    background: var(--crema-dark);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--lavanda-mid), var(--lavanda));
+    border-radius: 10px;
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* ─── SUMMARY SCREEN ─────────────────────────── */
+  .summary-header {
+    background: linear-gradient(135deg, var(--lavanda-light), var(--crema));
+    border: 1px solid var(--lavanda);
+    border-radius: 20px;
+    padding: 24px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .summary-header-emoji { font-size: 40px; display: block; margin-bottom: 10px; }
+  .summary-header-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--lavanda-deep);
+  }
+  .summary-header-sub {
+    font-size: 13px;
+    color: var(--text-mid);
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  .summary-block {
+    background: var(--white);
+    border: 1px solid var(--crema-dark);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+  .summary-block-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--musgo);
+    margin-bottom: 10px;
+  }
+  .summary-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chip {
+    background: var(--lavanda-light);
+    border: 1px solid var(--lavanda);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--lavanda-deep);
+    font-family: 'Poppins', sans-serif;
+  }
+  .chip.musgo {
+    background: #EEF2EB;
+    border-color: var(--musgo-light);
+    color: var(--musgo-dark);
+  }
+  .summary-intensity {
+    font-family: 'Poppins', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--lavanda-deep);
+  }
+  .summary-intensity-label {
+    font-size: 13px;
+    color: var(--text-light);
+  }
+  .summary-note-text {
+    font-size: 14px;
+    color: var(--text-mid);
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  .copy-box {
+    background: var(--crema);
+    border: 1.5px dashed var(--lavanda-mid);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 18px;
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.7;
+    white-space: pre-wrap;
+    font-family: 'Work Sans', sans-serif;
+  }
+  .copy-success {
+    display: none;
+    text-align: center;
+    font-size: 13px;
+    color: var(--musgo);
+    font-weight: 500;
+    margin-top: 8px;
+    animation: fadeUp 0.3s ease;
+  }
+
+  /* ─── DATE INPUT ─────────────────────────────── */
+  .date-wrap {
+    background: var(--white);
+    border: 1px solid var(--crema-dark);
+    border-radius: var(--card-radius);
+    padding: 18px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .date-icon { font-size: 22px; }
+  .date-wrap label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-mid);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .date-wrap input[type="date"],
+  .date-wrap input[type="time"] {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text-dark);
+    background: var(--crema);
+    border: 1px solid var(--crema-dark);
+    border-radius: 10px;
+    padding: 8px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+    cursor: pointer;
+  }
+  .date-wrap input:focus { border-color: var(--lavanda-mid); }
+  .date-inputs { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  /* Mood emoji row */
+  .mood-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    gap: 8px;
+  }
+  .mood-btn {
+    flex: 1;
+    background: var(--white);
+    border: 2px solid var(--crema-dark);
+    border-radius: 14px;
+    padding: 12px 6px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 22px;
+    position: relative;
+  }
+  .mood-btn span.mood-text {
+    display: block;
+    font-size: 10px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    color: var(--text-light);
+    margin-top: 5px;
+    line-height: 1.2;
+  }
+  .mood-btn:hover, .mood-btn.selected {
+    border-color: var(--lavanda-mid);
+    background: var(--lavanda-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(110,95,154,0.15);
+  }
+  .mood-btn.selected .mood-text { color: var(--lavanda-deep); font-weight: 600; }
+
+  /* ─── FOOTER NOTE ─────────────────────────────── */
+  .footer-note {
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--text-light);
+    font-style: italic;
+    margin-top: 20px;
+    padding-bottom: 20px;
+  }
+
+  @media (max-width: 400px) {
+    .cards-grid { grid-template-columns: repeat(2, 1fr); }
+    .mood-row { gap: 5px; }
+    .mood-btn { padding: 10px 3px; font-size: 19px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-name" style="font-size:clamp(14px,3.5vw,18px); font-weight:500; letter-spacing:0.2px;">Herramienta terapéutica &nbsp;·&nbsp; Lic. Agostina Galiani</div>
+</header>
+
+<!-- ─── PANTALLA 0: BIENVENIDA ─────────────────── -->
+<div class="screen active" id="screen-0">
+  <div style="padding-top: 12px;">
+    <div class="welcome-card">
+      <span class="welcome-emoji">🌿</span>
+      <div class="welcome-title">Registro de Chequeo Corporal y Emocional</div>
+      <div class="welcome-text">
+        Un espacio para pausar, observar y registrar cómo estás en este momento.<br>No hay respuestas correctas ni incorrectas.
+      </div>
+      <div class="time-badge">⏱️ &nbsp; Lleva menos de 2 minutos</div>
+      <button class="btn-primary" onclick="goTo(1)">Empezar el chequeo →</button>
+    </div>
+    <p class="footer-note">Este registro es solo para vos. Podés compartirlo con tu terapeuta si querés.</p>
+  </div>
+</div>
+
+<!-- ─── PANTALLA 1: FECHA + ESTADO ÁNIMO GENERAL ─ -->
+<div class="screen" id="screen-1">
+  <div class="progress-wrap">
+    <div class="progress-row">
+      <span class="progress-label">Paso 1 de 5</span>
+      <span class="progress-count">Contexto</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 20%"></div></div>
+  </div>
+
+  <div class="section-eyebrow">Antes de empezar</div>
+  <div class="section-title">¿Cuándo es este registro?</div>
+  <div class="section-subtitle">Podés completarlo ahora o registrar un momento anterior.</div>
+
+  <div class="date-wrap">
+    <span class="date-icon">📅</span>
+    <div>
+      <label>Fecha y hora</label>
+      <div class="date-inputs">
+        <input type="date" id="reg-date">
+        <input type="time" id="reg-time">
+      </div>
+    </div>
+  </div>
+
+  <div class="section-eyebrow" style="margin-bottom: 10px;">Estado general</div>
+  <div class="section-title" style="font-size: 18px; margin-bottom: 6px;">¿Cómo llegás a este momento?</div>
+  <div class="section-subtitle">Elegí lo que más se acerque.</div>
+
+  <div class="mood-row" id="mood-selector">
+    <button class="mood-btn" onclick="selectMood(this, '😞 Muy mal')">😞<span class="mood-text">Muy mal</span></button>
+    <button class="mood-btn" onclick="selectMood(this, '😔 Mal')">😔<span class="mood-text">Mal</span></button>
+    <button class="mood-btn" onclick="selectMood(this, '😐 Regular')">😐<span class="mood-text">Regular</span></button>
+    <button class="mood-btn" onclick="selectMood(this, '🙂 Bien')">🙂<span class="mood-text">Bien</span></button>
+    <button class="mood-btn" onclick="selectMood(this, '😊 Muy bien')">😊<span class="mood-text">Muy bien</span></button>
+  </div>
+
+  <button class="btn-primary" onclick="goTo(2)">Continuar →</button>
+  <button class="btn-ghost" onclick="goTo(0)">← Volver</button>
+</div>
+
+<!-- ─── PANTALLA 2: SENSACIONES CORPORALES ──────── -->
+<div class="screen" id="screen-2">
+  <div class="progress-wrap">
+    <div class="progress-row">
+      <span class="progress-label">Paso 2 de 5</span>
+      <span class="progress-count">Cuerpo</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 40%"></div></div>
+  </div>
+
+  <div class="section-eyebrow">Sensaciones físicas</div>
+  <div class="section-title">¿Qué notás en el cuerpo?</div>
+  <div class="section-subtitle">Podés elegir una o varias.</div>
+
+  <div class="cards-grid" id="cards-cuerpo">
+    <!-- Tensión / Pesadez -->
+    <div class="card" data-group="cuerpo" data-val="Pesado/a" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🪨</span>
+      <div class="card-label">Pesado/a</div>
+      <div class="card-desc">Como si hubiera algo que carga</div>
+    </div>
+    <div class="card" data-group="cuerpo" data-val="Tensión" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🌀</span>
+      <div class="card-label">Tensión</div>
+      <div class="card-desc">En la panza, el pecho o la garganta</div>
+    </div>
+    <div class="card" data-group="cuerpo" data-val="Congelado/a" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🧊</span>
+      <div class="card-label">Congelado/a</div>
+      <div class="card-desc">Sin movimiento, paralizado/a</div>
+    </div>
+    <div class="card" data-group="cuerpo" data-val="Caliente" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🔥</span>
+      <div class="card-label">Caliente</div>
+      <div class="card-desc">Calor en la cara, pecho o nuca</div>
+    </div>
+    <div class="card" data-group="cuerpo" data-val="Liviano/a" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🪶</span>
+      <div class="card-label">Liviano/a</div>
+      <div class="card-desc">Como que algo se alivió</div>
+    </div>
+    <div class="card" data-group="cuerpo" data-val="Sin aire" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">💨</span>
+      <div class="card-label">Sin aire</div>
+      <div class="card-desc">Respiración corta o apretada</div>
+    </div>
+    <div class="card" data-group="cuerpo" data-val="Temblor / agitación" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">〰️</span>
+      <div class="card-label">Temblor</div>
+      <div class="card-desc">Agitación interna o nerviosismo</div>
+    </div>
+    <div class="card" data-group="cuerpo" data-val="Dolor / molestia" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">💫</span>
+      <div class="card-label">Dolor / molestia</div>
+      <div class="card-desc">En alguna parte del cuerpo</div>
+    </div>
+    <div class="card" data-group="cuerpo" data-val="Entumecido/a" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">😶</span>
+      <div class="card-label">Entumecido/a</div>
+      <div class="card-desc">No siento mucho en el cuerpo</div>
+    </div>
+    <div class="card" data-group="cuerpo" data-val="Relajado/a" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🌊</span>
+      <div class="card-label">Relajado/a</div>
+      <div class="card-desc">El cuerpo está tranquilo</div>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="goTo(3)">Continuar →</button>
+  <button class="btn-ghost" onclick="goTo(1)">← Volver</button>
+</div>
+
+<!-- ─── PANTALLA 3: ENERGÍA + VÍNCULO ──────────── -->
+<div class="screen" <div class="screen" id="screen-3">
+  <div class="progress-wrap">
+    <div class="progress-row">
+      <span class="progress-label">Paso 3 de 5</span>
+      <span class="progress-count">Energía y vínculos</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 80%"></div></div>
+  </div>
+
+  <div class="section-eyebrow">Nivel de energía</div>
+  <div class="section-title">¿Cómo está tu energía?</div>
+  <div class="section-subtitle">Elegí lo que más se acerque.</div>
+
+  <div class="cards-grid" style="margin-bottom: 28px;">
+    <div class="card" data-group="energia" data-val="Sin energía" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🪫</span>
+      <div class="card-label">Sin energía</div>
+      <div class="card-desc">No tengo ganas de nada</div>
+    </div>
+    <div class="card" data-group="energia" data-val="Acelerado/a" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">⚡</span>
+      <div class="card-label">Acelerado/a</div>
+      <div class="card-desc">Todo va muy rápido adentro</div>
+    </div>
+    <div class="card" data-group="energia" data-val="Apagado/a" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">😴</span>
+      <div class="card-label">Apagado/a</div>
+      <div class="card-desc">Quiero desaparecer un rato</div>
+    </div>
+    <div class="card" data-group="energia" data-val="Desbordado/a" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🌊</span>
+      <div class="card-label">Desbordado/a</div>
+      <div class="card-desc">Es demasiado, no puedo sostenerlo</div>
+    </div>
+    <div class="card" data-group="energia" data-val="Estable" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">⚖️</span>
+      <div class="card-label">Estable</div>
+      <div class="card-desc">Me siento en equilibrio</div>
+    </div>
+    <div class="card" data-group="energia" data-val="Con energía" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🔋</span>
+      <div class="card-label">Con energía</div>
+      <div class="card-desc">Me siento activo/a</div>
+    </div>
+  </div>
+
+  <div class="section-eyebrow" style="margin-bottom: 8px;">Con los demás</div>
+  <div class="section-title" style="font-size: 18px; margin-bottom: 6px;">¿Cómo estás en relación a los demás?</div>
+  <div class="section-subtitle">Opcional.</div>
+
+  <div class="cards-grid" style="margin-bottom: 28px;">
+    <div class="card" data-group="vinculo" data-val="Cerrado/a" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🧱</span>
+      <div class="card-label">Cerrado/a</div>
+      <div class="card-desc">No quiero que nadie se acerque</div>
+    </div>
+    <div class="card" data-group="vinculo" data-val="Solo/a" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🫧</span>
+      <div class="card-label">Solo/a</div>
+      <div class="card-desc">Aunque haya gente alrededor</div>
+    </div>
+    <div class="card" data-group="vinculo" data-val="Conectado/a" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🤝</span>
+      <div class="card-label">Conectado/a</div>
+      <div class="card-desc">Siento que alguien me entiende</div>
+    </div>
+    <div class="card" data-group="vinculo" data-val="Invisible" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">👻</span>
+      <div class="card-label">Invisible</div>
+      <div class="card-desc">Como que no cuento o no importo</div>
+    </div>
+  </div>
+
+  <!-- INTENSIDAD -->
+  <div class="intensity-wrap">
+    <div class="intensity-title">¿Con qué intensidad vivís todo esto ahora?</div>
+    <div class="slider-row">
+      <input type="range" id="intensidad" min="1" max="10" value="5"
+        oninput="updateSlider(this)">
+      <div class="slider-value" id="intensidad-val">5</div>
+    </div>
+    <div class="slider-labels">
+      <span>Muy poquito</span>
+      <span>Mucho</span>
+    </div>
+  </div>
+
+
+  <button class="btn-primary" onclick="goTo(4)">Continuar →</button>
+  <button class="btn-ghost" onclick="goTo(2)">← Volver</button>
+</div>
+
+<!-- ─── PANTALLA 5: NOTAS + CIERRE ──────────────── -->
+<div class="screen" <div class="screen" id="screen-4">
+  <div class="progress-wrap">
+    <div class="progress-row">
+      <span class="progress-label">Paso 4 de 5</span>
+      <span class="progress-count">Emociones</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 60%"></div></div>
+  </div>
+
+  <div class="section-eyebrow">Mundo emocional</div>
+  <div class="section-title">¿Identificás alguna emoción?</div>
+  <div class="section-subtitle">Es frecuente no saber qué sentimos o tener muchas emociones en simultáneo. Si no te identificás con ninguna, podés marcar <strong style="color:var(--lavanda-deep)">No sé</strong>.</div>
+
+  <div class="category-label">Emociones difíciles</div>
+  <div class="cards-grid">
+    <div class="card" data-group="emocion" data-val="Tristeza" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">💧</span>
+      <div class="card-label">Tristeza</div>
+      <div class="card-desc">Pena, melancolía, pesar</div>
+    </div>
+    <div class="card" data-group="emocion" data-val="Angustia" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🌧️</span>
+      <div class="card-label">Angustia</div>
+      <div class="card-desc">Opresión sin causa clara</div>
+    </div>
+    <div class="card" data-group="emocion" data-val="Miedo" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">😨</span>
+      <div class="card-label">Miedo</div>
+      <div class="card-desc">Temor, alarma, anticipación</div>
+    </div>
+    <div class="card" data-group="emocion" data-val="Enojo / rabia" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🌋</span>
+      <div class="card-label">Enojo / rabia</div>
+      <div class="card-desc">Irritación, frustración</div>
+    </div>
+    <div class="card" data-group="emocion" data-val="Vergüenza" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🫣</span>
+      <div class="card-label">Vergüenza</div>
+      <div class="card-desc">Exposición, incomodidad</div>
+    </div>
+    <div class="card" data-group="emocion" data-val="Culpa" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🪤</span>
+      <div class="card-label">Culpa</div>
+      <div class="card-desc">Responsabilidad, reproche</div>
+    </div>
+    <div class="card" data-group="emocion" data-val="Frustración" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">😤</span>
+      <div class="card-label">Frustración</div>
+      <div class="card-desc">Algo no salió como esperaba</div>
+    </div>
+    <div class="card" data-group="emocion" data-val="Decepción" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🫠</span>
+      <div class="card-label">Decepción</div>
+      <div class="card-desc">Esperaba algo distinto</div>
+    </div>
+  </div>
+
+  <div class="category-label">Emociones neutras o mixtas</div>
+  <div class="cards-grid">
+    <div class="card" data-group="emocion" data-val="Confusión" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🌫️</span>
+      <div class="card-label">Confusión</div>
+      <div class="card-desc">Algo pasa pero no sé qué</div>
+    </div>
+    <div class="card" data-group="emocion" data-val="Soledad" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🏝️</span>
+      <div class="card-label">Soledad</div>
+      <div class="card-desc">Aunque haya gente alrededor</div>
+    </div>
+    <div class="card" data-group="emocion" data-val="Nostalgia" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🌙</span>
+      <div class="card-label">Nostalgia</div>
+      <div class="card-desc">Extrañar algo o a alguien</div>
+    </div>
+    <div class="card" data-group="emocion" data-val="Indiferencia" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">⚪</span>
+      <div class="card-label">Indiferencia</div>
+      <div class="card-desc">No siento nada especial</div>
+    </div>
+  </div>
+
+  <div class="category-label">Emociones agradables</div>
+  <div class="cards-grid">
+    <div class="card" data-group="emocion" data-val="Alivio" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🌤️</span>
+      <div class="card-label">Alivio</div>
+      <div class="card-desc">Algo pesado se fue</div>
+    </div>
+    <div class="card" data-group="emocion" data-val="Gratitud" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🌸</span>
+      <div class="card-label">Gratitud</div>
+      <div class="card-desc">Apreciación, ternura</div>
+    </div>
+    <div class="card" data-group="emocion" data-val="Esperanza" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🌱</span>
+      <div class="card-label">Esperanza</div>
+      <div class="card-desc">Algo puede mejorar</div>
+    </div>
+    <div class="card" data-group="emocion" data-val="Calma" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">🕊️</span>
+      <div class="card-label">Calma</div>
+      <div class="card-desc">Tranquilidad, paz interior</div>
+    </div>
+    <div class="card" data-group="emocion" data-val="Alegría" onclick="toggleCard(this)">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">☀️</span>
+      <div class="card-label">Alegría</div>
+      <div class="card-desc">Liviandad, bienestar, ganas</div>
+    </div>
+  </div>
+
+  <div class="category-label">No encontrás ninguna</div>
+  <div class="cards-grid" style="margin-bottom: 28px;">
+    <div class="card" data-group="emocion" data-val="No sé" onclick="toggleCard(this)" style="border-style: dashed; background: var(--crema);">
+      <span class="check"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="card-emoji">❓</span>
+      <div class="card-label">No sé</div>
+      <div class="card-desc">Y está bien no saber</div>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="goTo(5)">Continuar →</button>
+  <button class="btn-ghost" onclick="goTo(3)">← Volver</button>
+</div>
+
+<!-- ─── PANTALLA 4: EMOCIONES ────────────────────── -->
+<div class="screen" id="screen-5">
+  <div class="progress-wrap">
+    <div class="progress-row">
+      <span class="progress-label">Paso 5 de 5</span>
+      <span class="progress-count">Cierre</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%"></div></div>
+  </div>
+
+  <div class="section-eyebrow">Para terminar</div>
+  <div class="section-title">¿Algo más que quieras registrar?</div>
+  <div class="section-subtitle">Un pensamiento, una imagen, una frase. No es obligatorio.</div>
+
+  <div class="note-wrap">
+    <div class="note-title">🖊️ Nota libre</div>
+    <textarea id="nota-libre" placeholder="Lo que tenga sentido poner acá…" rows="4"></textarea>
+  </div>
+
+  <div class="note-wrap" style="margin-bottom: 28px;">
+    <div class="note-title">💬 ¿Querés decirle algo a tu terapeuta antes de la sesión?</div>
+    <textarea id="nota-tera" placeholder="Algo que quieras que ella sepa…" rows="3"></textarea>
+  </div>
+
+  <button class="btn-primary" onclick="buildSummary(); goTo(6)">Ver mi resumen →</button>
+  <button class="btn-ghost" onclick="goTo(4)">← Volver</button>
+</div>
+
+<!-- ─── PANTALLA 6: RESUMEN ──────────────────────── -->
+<div class="screen" id="screen-6">
+  <div class="summary-header">
+    <span class="summary-header-emoji">✨</span>
+    <div class="summary-header-title">Tu chequeo está listo</div>
+    <div class="summary-header-sub">Gracias por tomarte este momento para vos</div>
+  </div>
+
+  <!-- Bloque fecha/mood -->
+  <div class="summary-block">
+    <div class="summary-block-title">📅 Contexto</div>
+    <div id="sum-contexto" class="summary-chips"></div>
+  </div>
+
+  <!-- Cuerpo -->
+  <div class="summary-block" id="sum-block-cuerpo" style="display:none">
+    <div class="summary-block-title">🫀 Sensaciones en el cuerpo</div>
+    <div id="sum-cuerpo" class="summary-chips"></div>
+  </div>
+
+  <!-- Emociones -->
+  <div class="summary-block" id="sum-block-emocion" style="display:none">
+    <div class="summary-block-title">💜 Emociones</div>
+    <div id="sum-emocion" class="summary-chips"></div>
+  </div>
+
+  <!-- Energía -->
+  <div class="summary-block" id="sum-block-energia" style="display:none">
+    <div class="summary-block-title">⚡ Energía</div>
+    <div id="sum-energia" class="summary-chips"></div>
+  </div>
+
+  <!-- Vínculo -->
+  <div class="summary-block" id="sum-block-vinculo" style="display:none">
+    <div class="summary-block-title">🤝 Con los demás</div>
+    <div id="sum-vinculo" class="summary-chips"></div>
+  </div>
+
+  <!-- Intensidad -->
+  <div class="summary-block">
+    <div class="summary-block-title">🌡️ Intensidad</div>
+    <div style="display:flex; align-items:baseline; gap:8px;">
+      <span class="summary-intensity" id="sum-intensidad">5</span>
+      <span class="summary-intensity-label">/ 10</span>
+    </div>
+  </div>
+
+  <!-- Nota libre -->
+  <div class="summary-block" id="sum-block-nota" style="display:none">
+    <div class="summary-block-title">🖊️ Nota</div>
+    <div class="summary-note-text" id="sum-nota"></div>
+  </div>
+
+  <!-- Nota terapeuta -->
+  <div class="summary-block" id="sum-block-tera" style="display:none">
+    <div class="summary-block-title">💬 Para Agostina</div>
+    <div class="summary-note-text" id="sum-tera"></div>
+  </div>
+
+  <!-- WhatsApp copy -->
+  <div class="category-label" style="margin-top: 28px;">Compartir con tu terapeuta</div>
+  <textarea id="whatsapp-text" readonly
+    style="width:100%; font-family:'Work Sans',sans-serif; font-size:13px; color:var(--text-mid);
+           background:var(--crema); border:1.5px dashed var(--lavanda-mid); border-radius:16px;
+           padding:18px; line-height:1.7; resize:none; min-height:180px; outline:none; cursor:text;"
+    onclick="this.select()"
+    onfocus="this.select()"></textarea>
+  <button class="btn-primary" onclick="copyWA()" style="margin-top:12px;">📋 Copiar para WhatsApp</button>
+  <div class="copy-success" id="copy-ok">¡Copiado! Podés pegarlo en WhatsApp 💜</div>
+  <p style="text-align:center;font-size:12px;color:var(--text-light);margin-top:8px;">
+    También podés tocar el texto, seleccionar todo y copiar manualmente.
+  </p>
+  <button class="btn-secondary" onclick="resetAll()">Hacer un nuevo registro</button>
+
+  <p class="footer-note">Agostina Galiani · Herramienta de apoyo terapéutico</p>
+</div>
+
+<script>
+  // ── State ──────────────────────────────────────────
+  const state = {
+    mood: '',
+    date: '',
+    time: '',
+    selections: { cuerpo: [], emocion: [], energia: [], vinculo: [] },
+    intensidad: 5,
+    notaLibre: '',
+    notaTera: ''
+  };
+
+  // ── Navigation ─────────────────────────────────────
+  function goTo(n) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById('screen-' + n);
+    target.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── Card toggle ────────────────────────────────────
+  function toggleCard(el) {
+    el.classList.toggle('selected');
+    const group = el.dataset.group;
+    const val   = el.dataset.val;
+    const arr   = state.selections[group];
+    const idx   = arr.indexOf(val);
+    if (idx === -1) arr.push(val); else arr.splice(idx, 1);
+  }
+
+  // ── Mood ───────────────────────────────────────────
+  function selectMood(btn, label) {
+    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    state.mood = label;
+  }
+
+  // ── Slider ─────────────────────────────────────────
+  function updateSlider(el) {
+    state.intensidad = el.value;
+    document.getElementById('intensidad-val').textContent = el.value;
+    const pct = ((el.value - 1) / 9) * 100;
+    el.style.setProperty('--val', pct + '%');
+  }
+  // Init slider gradient
+  document.getElementById('intensidad').style.setProperty('--val', '44%');
+
+  // ── Set today's date/time ──────────────────────────
+  (function initDateTime() {
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    document.getElementById('reg-date').value =
+      `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+    document.getElementById('reg-time').value =
+      `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  })();
+
+  // ── Build summary ──────────────────────────────────
+  function buildSummary() {
+    state.date     = document.getElementById('reg-date').value;
+    state.time     = document.getElementById('reg-time').value;
+    state.notaLibre = document.getElementById('nota-libre').value.trim();
+    state.notaTera  = document.getElementById('nota-tera').value.trim();
+
+    // Format date nicely
+    let fechaStr = '';
+    if (state.date) {
+      const [y, m, d] = state.date.split('-');
+      const meses = ['enero','febrero','marzo','abril','mayo','junio',
+                     'julio','agosto','septiembre','octubre','noviembre','diciembre'];
+      fechaStr = `${parseInt(d)} de ${meses[parseInt(m)-1]} de ${y}`;
+    }
+    const horaStr = state.time ? ` · ${state.time} hs` : '';
+
+    // Contexto chips
+    const ctxEl = document.getElementById('sum-contexto');
+    ctxEl.innerHTML = '';
+    if (fechaStr) ctxEl.innerHTML += `<span class="chip musgo">📅 ${fechaStr}${horaStr}</span>`;
+    if (state.mood) ctxEl.innerHTML += `<span class="chip">${state.mood}</span>`;
+    if (!ctxEl.innerHTML) ctxEl.innerHTML = '<span style="font-size:13px;color:var(--text-light)">Sin fecha registrada</span>';
+
+    // Helper
+    function fillBlock(group, elId, blockId) {
+      const arr = state.selections[group];
+      const block = document.getElementById(blockId);
+      if (!arr.length) { block.style.display = 'none'; return; }
+      block.style.display = 'block';
+      document.getElementById(elId).innerHTML =
+        arr.map(v => `<span class="chip">${v}</span>`).join('');
+    }
+    fillBlock('cuerpo',  'sum-cuerpo',  'sum-block-cuerpo');
+    fillBlock('emocion', 'sum-emocion', 'sum-block-emocion');
+    fillBlock('energia', 'sum-energia', 'sum-block-energia');
+    fillBlock('vinculo', 'sum-vinculo', 'sum-block-vinculo');
+
+    document.getElementById('sum-intensidad').textContent = state.intensidad;
+
+    const notaBlock = document.getElementById('sum-block-nota');
+    if (state.notaLibre) {
+      notaBlock.style.display = 'block';
+      document.getElementById('sum-nota').textContent = state.notaLibre;
+    } else { notaBlock.style.display = 'none'; }
+
+    const teraBlock = document.getElementById('sum-block-tera');
+    if (state.notaTera) {
+      teraBlock.style.display = 'block';
+      document.getElementById('sum-tera').textContent = state.notaTera;
+    } else { teraBlock.style.display = 'none'; }
+
+    // WhatsApp text
+    buildWA(fechaStr, horaStr);
+  }
+
+  function buildWA(fechaStr, horaStr) {
+    const lines = [];
+    lines.push('🌿 *Chequeo corporal y emocional*');
+    lines.push('_Registro personal · Herramienta de Agostina Galiani_');
+    lines.push('');
+    if (fechaStr) lines.push(`📅 *Fecha:* ${fechaStr}${horaStr}`);
+    if (state.mood) lines.push(`✨ *Estado general:* ${state.mood}`);
+    lines.push('');
+    if (state.selections.cuerpo.length)
+      lines.push(`🫀 *Cuerpo:* ${state.selections.cuerpo.join(', ')}`);
+    if (state.selections.emocion.length)
+      lines.push(`💜 *Emociones:* ${state.selections.emocion.join(', ')}`);
+    if (state.selections.energia.length)
+      lines.push(`⚡ *Energía:* ${state.selections.energia.join(', ')}`);
+    if (state.selections.vinculo.length)
+      lines.push(`🤝 *Vínculos:* ${state.selections.vinculo.join(', ')}`);
+    lines.push('');
+    lines.push(`🌡️ *Intensidad:* ${state.intensidad}/10`);
+    if (state.notaLibre) { lines.push(''); lines.push(`🖊️ *Nota:* ${state.notaLibre}`); }
+    if (state.notaTera)  { lines.push(''); lines.push(`💬 *Para Agostina:* ${state.notaTera}`); }
+
+    document.getElementById('whatsapp-text').value = lines.join('\n');
+  }
+
+  function copyWA() {
+    const el = document.getElementById('whatsapp-text');
+    const text = el.value;
+    // Try modern clipboard API first
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        showCopyOk();
+      }).catch(() => fallbackCopy(el));
+    } else {
+      fallbackCopy(el);
+    }
+  }
+
+  function fallbackCopy(el) {
+    el.select();
+    el.setSelectionRange(0, 99999);
+    try {
+      document.execCommand('copy');
+      showCopyOk();
+    } catch(e) {
+      el.select();
+    }
+  }
+
+  function showCopyOk() {
+    const ok = document.getElementById('copy-ok');
+    ok.style.display = 'block';
+    setTimeout(() => ok.style.display = 'none', 3000);
+  }
+
+  function resetAll() {
+    // Reset state
+    state.mood = ''; state.date = ''; state.time = '';
+    state.selections = { cuerpo: [], emocion: [], energia: [], vinculo: [] };
+    state.intensidad = 5; state.notaLibre = ''; state.notaTera = '';
+    // Unselect all cards
+    document.querySelectorAll('.card.selected').forEach(c => c.classList.remove('selected'));
+    document.querySelectorAll('.mood-btn.selected').forEach(b => b.classList.remove('selected'));
+    // Reset fields
+    document.getElementById('nota-libre').value = '';
+    document.getElementById('nota-tera').value  = '';
+    document.getElementById('intensidad').value = 5;
+    document.getElementById('intensidad-val').textContent = '5';
+    document.getElementById('intensidad').style.setProperty('--val', '44%');
+    // Re-init date
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    document.getElementById('reg-date').value =
+      `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+    document.getElementById('reg-time').value =
+      `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    goTo(0);
+  }
+</script>
+</body>
+</html>
